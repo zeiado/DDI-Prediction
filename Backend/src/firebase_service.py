@@ -203,6 +203,37 @@ class FirebaseService:
             print(f"❌ Error getting interactions: {e}")
             return []
     
+    def get_interaction(self, interaction_id: str, user_id: str = None) -> Optional[Dict]:
+        """
+        Get a single interaction by ID
+        
+        Args:
+            interaction_id: Interaction document ID
+            user_id: Optional user ID for verification
+            
+        Returns:
+            Interaction data dictionary or None
+        """
+        try:
+            doc = self.db.collection('interactions').document(interaction_id).get()
+            
+            if not doc.exists:
+                return None
+            
+            data = doc.to_dict()
+            data['id'] = doc.id
+            
+            # Verify user ownership if user_id provided
+            if user_id and data.get('userId') != user_id:
+                print(f"⚠️ User {user_id} attempted to access interaction {interaction_id} owned by {data.get('userId')}")
+                return None
+            
+            return data
+            
+        except Exception as e:
+            print(f"❌ Error getting interaction: {e}")
+            return None
+    
     def delete_interaction(self, interaction_id: str, user_id: str) -> bool:
         """
         Delete an interaction (with user verification)

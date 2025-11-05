@@ -16,6 +16,9 @@ rdkit==2023.9.1
 # Firebase
 firebase-admin==6.2.0
 
+# AI/LLM
+google-generativeai==0.3.2
+
 # Utilities
 python-dotenv==1.0.0
 requests==2.31.0

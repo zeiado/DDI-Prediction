@@ -21,6 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from predict import DDIPredictor
 from firebase_service import FirebaseService
+from gemini_service import GeminiChatService
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -43,12 +44,13 @@ app.add_middleware(
 # Global instances
 predictor = None
 firebase = None
+gemini_service = None
 
 
 @app.on_event("startup")
 async def startup_event():
     """Load model and initialize Firebase on startup"""
-    global predictor, firebase
+    global predictor, firebase, gemini_service
     
     try:
         # Load ML model
@@ -68,6 +70,14 @@ async def startup_event():
     except Exception as e:
         print(f"⚠️ Firebase initialization failed: {e}")
         print("⚠️ API will run without cloud storage")
+    
+    try:
+        # Initialize Gemini Chat Service
+        gemini_service = GeminiChatService()
+        print("✅ Gemini AI Chat Service initialized")
+    except Exception as e:
+        print(f"⚠️ Gemini initialization failed: {e}")
+        print("⚠️ Chat features will be unavailable")
 
 
 # ==================== Pydantic Models ====================
@@ -125,6 +135,39 @@ class HealthResponse(BaseModel):
     firebase_connected: bool
     timestamp: str
     version: str
+
+
+class ChatSummaryRequest(BaseModel):
+    """Request model for generating chat summary"""
+    interaction_id: Optional[str] = Field(None, description="Interaction ID to summarize")
+    interaction_data: Optional[Dict] = Field(None, description="Full interaction data if ID not available")
+    user_id: Optional[str] = Field(None, description="User ID")
+
+
+class ChatMessageRequest(BaseModel):
+    """Request model for chat message"""
+    interaction_id: Optional[str] = Field(None, description="Interaction ID for context")
+    interaction_data: Optional[Dict] = Field(None, description="Full interaction data if ID not available")
+    message: str = Field(..., description="User's message")
+    user_id: Optional[str] = Field(None, description="User ID")
+    chat_history: Optional[List[Dict]] = Field(None, description="Previous chat messages")
+
+
+class ChatResponse(BaseModel):
+    """Response model for chat"""
+    success: bool
+    response: str
+    timestamp: str
+    language_detected: Optional[str] = None
+
+
+class ChatSummaryResponse(BaseModel):
+    """Response model for chat summary"""
+    success: bool
+    english: str
+    arabic: str
+    full_text: str
+    timestamp: str
 
 
 # ==================== Helper Functions ====================
@@ -394,6 +437,116 @@ async def clear_history(user_id: str):
         "message": f"Cleared {count} interactions",
         "count": count
     }
+
+
+# ==================== AI Chat Assistant ====================
+
+@app.post("/chat/summary", response_model=ChatSummaryResponse, tags=["AI Chat"])
+async def generate_chat_summary(request: ChatSummaryRequest):
+    """
+    Generate bilingual (Arabic/English) summary of interaction result
+    This is called when user opens the chat for the first time
+    """
+    if not gemini_service:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI Chat service not available"
+        )
+    
+    try:
+        # Get interaction data - either from Firebase or from request
+        interaction = None
+        
+        if request.interaction_id and firebase:
+            # Try to get from Firebase if ID provided
+            interaction = firebase.get_interaction(request.interaction_id, request.user_id)
+        
+        if not interaction and request.interaction_data:
+            # Use provided interaction data
+            interaction = request.interaction_data
+        
+        if not interaction:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No interaction data available"
+            )
+        
+        # Generate summary
+        summary = gemini_service.generate_initial_summary(interaction)
+        
+        return ChatSummaryResponse(
+            success=True,
+            english=summary.get('english', ''),
+            arabic=summary.get('arabic', ''),
+            full_text=summary.get('full_text', ''),
+            timestamp=summary.get('timestamp', datetime.now().isoformat())
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error generating summary: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate summary: {str(e)}"
+        )
+
+
+@app.post("/chat/message", response_model=ChatResponse, tags=["AI Chat"])
+async def send_chat_message(request: ChatMessageRequest):
+    """
+    Send a message to the AI chat assistant
+    Supports both Arabic and English
+    """
+    if not gemini_service:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI Chat service not available"
+        )
+    
+    try:
+        # Get interaction data - either from Firebase or from request
+        interaction = None
+        
+        if request.interaction_id and firebase:
+            # Try to get from Firebase if ID provided
+            interaction = firebase.get_interaction(request.interaction_id, request.user_id)
+        
+        if not interaction and request.interaction_data:
+            # Use provided interaction data
+            interaction = request.interaction_data
+        
+        if not interaction:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No interaction data available"
+            )
+        
+        # Detect language
+        detected_lang = gemini_service.detect_language(request.message)
+        
+        # Get chat response
+        response = gemini_service.chat(
+            message=request.message,
+            interaction_context=interaction,
+            chat_history=request.chat_history or []
+        )
+        
+        return ChatResponse(
+            success=response.get('success', True),
+            response=response.get('response', ''),
+            timestamp=response.get('timestamp', datetime.now().isoformat()),
+            language_detected=detected_lang
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in chat: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Chat error: {str(e)}"
+        )
 
 
 # ==================== Helper Functions ====================

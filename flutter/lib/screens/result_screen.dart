@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../models/interaction_result.dart';
 import '../utils/constants.dart';
 import '../utils/theme.dart';
+import 'chat_screen.dart';
 import 'dart:math' as math;
 
 class ResultScreen extends StatefulWidget {
@@ -707,42 +708,73 @@ class _ResultScreenState extends State<ResultScreen>
   }
 
   Widget _buildActionButtons() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back_rounded),
-            label: const Text('Back'),
-            style: OutlinedButton.styleFrom(
+        // AI Assistant Button (Full Width)
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    result: widget.result,
+                    userId: null, // Pass actual userId if available
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.smart_toy_rounded),
+            label: const Text('Ask AI Assistant'),
+            style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              side: const BorderSide(
-                color: AppTheme.primaryColor,
-                width: 2,
-              ),
+              backgroundColor: const Color(0xFF8B5CF6),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // Check another interaction
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Check Another'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: AppTheme.primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+        const SizedBox(height: 12),
+        // Back and Check Another Buttons
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: const Text('Back'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(
+                    color: AppTheme.primaryColor,
+                    width: 2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Check another interaction
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Check Another'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppTheme.primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

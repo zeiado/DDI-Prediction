@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   static const String baseUrl = 'http://192.168.1.9:5000';
+  static const String apiBaseUrl = 'http://192.168.1.9:5000'; // For chat service
   static const String checkInteractionEndpoint = '/check-interaction';
   static const String searchDrugsEndpoint = '/search-drugs';
   static const String healthEndpoint = '/health';

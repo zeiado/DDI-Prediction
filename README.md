@@ -55,6 +55,11 @@ Drug-drug interactions are a significant concern in healthcare:
 - 📱 **Beautiful UI**: Modern, intuitive interface with smooth animations
 - 📊 **Risk Visualization**: Visual risk gauge showing interaction severity
 - 📝 **Detailed Results**: Comprehensive information about predicted interactions
+- 🤖 **AI Chat Assistant**: Bilingual (Arabic/English) AI assistant powered by Gemini 2.5 Flash
+  - Automatic interaction summaries
+  - Context-aware Q&A about drug interactions
+  - Markdown-formatted responses with proper styling
+  - Natural conversation flow
 - 📜 **History Tracking**: Save and review past searches (Firebase integration)
 - 🌙 **Dark Mode**: Eye-friendly dark theme support
 - 🔐 **User Authentication**: Secure login with Firebase Auth
@@ -65,9 +70,54 @@ Drug-drug interactions are a significant concern in healthcare:
 - 🧠 **Deep Learning**: PyTorch-based neural network for predictions
 - 🔬 **Molecular Fingerprints**: SMILES to Morgan fingerprint conversion
 - 📊 **Risk Scoring**: Multi-class classification (None, Moderate, Severe)
+- 🤖 **Gemini AI Integration**: Google Gemini 2.5 Flash for intelligent chat assistance
+  - Bilingual response generation (Arabic/English)
+  - Medical domain expertise
+  - Context-aware conversation management
 - 🐳 **Docker Support**: Easy deployment with Docker and Docker Compose
 - 🔥 **Firebase Integration**: Cloud storage for user data and history
 - 📈 **Monitoring**: Built-in logging and performance tracking
+
+## 🤖 AI Chat Assistant
+
+**NEW!** Powered by Google Gemini 2.5 Flash, our AI Chat Assistant provides intelligent, bilingual support for understanding drug interactions.
+
+### Key Features:
+- **Automatic Summaries**: When you open the chat, get an instant bilingual summary of the interaction
+- **Ask Anything**: Ask about side effects, alternatives, dosage, timing, or any other questions
+- **Bilingual Responses**: Every response in both Arabic (🇦🇪) and English (🇬🇧)
+- **Markdown Formatting**: Responses include **bold**, *italic*, bullet points, and proper formatting
+- **Context-Aware**: AI knows the specific drugs and interaction severity
+- **Natural Conversation**: Chat naturally - no need to repeat yourself
+
+### Example Conversation:
+```
+User: "What should I do if I'm already taking both?"
+
+AI: 🇬🇧 English:
+If you're already taking both medications:
+
+**Immediate Actions:**
+• Contact your doctor right away
+• Do NOT stop taking either medication without medical advice
+• Continue as prescribed until you speak with your doctor
+
+**Watch for bleeding signs:**
+• Unusual bruising
+• Blood in urine or stool
+• Nosebleeds
+
+🇦🇪 Arabic:
+إذا كنت تتناول كلا الدواءين بالفعل:
+
+**الإجراءات الفورية:**
+• اتصل بطبيبك على الفور
+• لا توقف تناول أي من الدواءين دون استشارة طبية
+• استمر كما هو موصوف حتى تتحدث مع طبيبك
+...
+```
+
+**Setup**: See [AI_CHAT_SETUP.md](Backend/AI_CHAT_SETUP.md) for configuration details.
 
 ## 🎥 Demo
 
@@ -151,15 +201,27 @@ graph TB
    # Edit .env with your configuration
    ```
 
-5. **Prepare data** (if training from scratch)
+5. **Configure AI Chat Assistant** (Optional but recommended)
+   ```bash
+   # Get Gemini API key from https://makersuite.google.com/app/apikey
+   # Add to .env file:
+   echo "GEMINI_API_KEY=your_api_key_here" >> .env
+   ```
+   See [AI_CHAT_SETUP.md](Backend/AI_CHAT_SETUP.md) for detailed setup.
+
+6. **Prepare data** (if training from scratch)
    ```bash
    # Place your data files in model_data/
    python src/data_preprocessing.py
    python src/model_training.py
    ```
 
-6. **Start the server**
+7. **Start the server**
    ```bash
+   # With Firebase and AI Chat:
+   ./start_server_firebase.sh
+   
+   # Or basic server:
    uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
    ```
 

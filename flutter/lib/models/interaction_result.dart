@@ -11,6 +11,7 @@ class InteractionResult {
   final List<String> recommendations;
   final List<String> sources;
   final String timestamp;
+  final String? interactionId;
 
   InteractionResult({
     required this.success,
@@ -23,6 +24,7 @@ class InteractionResult {
     required this.recommendations,
     required this.sources,
     required this.timestamp,
+    this.interactionId,
   });
 
   factory InteractionResult.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class InteractionResult {
       recommendations: (json['recommendations'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       sources: (json['sources'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       timestamp: json['timestamp'] ?? '',
+      interactionId: json['interaction_id'],
     );
   }
 
@@ -52,6 +55,7 @@ class InteractionResult {
       'recommendations': recommendations,
       'sources': sources,
       'timestamp': timestamp,
+      'interaction_id': interactionId,
     };
   }
 
