@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# Data files (training/test data)
+Backend/data/*.npy
+Backend/data/*.npz
+Backend/data/*.pkl
+Backend/data/*.pickle
+Backend/data/*.h5
+Backend/data/*.hdf5
+
+# Large CSV data files
+model_data/db_drug_interactions.csv
+
+# Keep small config/metadata files
+!*.json
+!requirements.txt
+!package.json
+
+# Model files
+*.pth
+*.pt
+*.ckpt
+*.pb
+*.onnx
+*.tflite
+
+# Flutter
+flutter/.dart_tool/
+flutter/build/
+flutter/.flutter-plugins
+flutter/.flutter-plugins-dependencies
+flutter/.packages
+flutter/pubspec.lock
+*.apk
+*.aab
+*.dex
+*.class
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.out
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

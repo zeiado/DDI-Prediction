@@ -1,0 +1,11 @@
+{
+  "input_dim": 4096,
+  "num_classes": 3,
+  "classes": [
+    "Moderate",
+    "None",
+    "Severe"
+  ],
+  "accuracy": 0.9383786316776007,
+  "device": "cpu"
+}
