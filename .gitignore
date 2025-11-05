@@ -33,13 +33,15 @@ model_data/db_drug_interactions.csv
 !requirements.txt
 !package.json
 
-# Model files
+# Model files (allow trained models in Backend/models/)
 *.pth
-*.pt
 *.ckpt
 *.pb
 *.onnx
 *.tflite
+
+# Allow trained models for deployment
+!Backend/models/*.pt
 
 # Flutter
 flutter/.dart_tool/
