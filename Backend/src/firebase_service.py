@@ -25,7 +25,9 @@ class FirebaseService:
             credentials_path: Path to Firebase service account JSON file
         """
         if credentials_path is None:
-            credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH', '../firebase-credentials.json')
+            # Check for Render secret file first, then local file
+            credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 
+                                        os.path.join(os.path.dirname(__file__), '..', 'firebase-credentials.json'))
         
         # Initialize Firebase Admin SDK (only once)
         if not firebase_admin._apps:
