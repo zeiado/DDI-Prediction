@@ -8,6 +8,9 @@ from firebase_admin import credentials, firestore, auth
 from datetime import datetime
 from typing import Dict, List, Optional
 import os
+import json
+import base64
+import tempfile
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -24,15 +27,26 @@ class FirebaseService:
         Args:
             credentials_path: Path to Firebase service account JSON file
         """
-        if credentials_path is None:
-            # Check for Render secret file first, then local file
-            credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 
-                                        os.path.join(os.path.dirname(__file__), '..', 'firebase-credentials.json'))
-        
         # Initialize Firebase Admin SDK (only once)
         if not firebase_admin._apps:
             try:
-                cred = credentials.Certificate(credentials_path)
+                # Check for base64-encoded credentials (Railway)
+                creds_base64 = os.getenv('FIREBASE_CREDENTIALS_BASE64')
+                
+                if creds_base64:
+                    # Decode base64 credentials
+                    creds_json = base64.b64decode(creds_base64).decode('utf-8')
+                    creds_dict = json.loads(creds_json)
+                    cred = credentials.Certificate(creds_dict)
+                    print("✅ Using base64-encoded Firebase credentials")
+                else:
+                    # Use credentials file path
+                    if credentials_path is None:
+                        credentials_path = os.getenv('FIREBASE_CREDENTIALS_PATH', 
+                                                    os.path.join(os.path.dirname(__file__), '..', 'firebase-credentials.json'))
+                    cred = credentials.Certificate(credentials_path)
+                    print(f"✅ Using Firebase credentials from: {credentials_path}")
+                
                 firebase_admin.initialize_app(cred)
                 print("✅ Firebase Admin SDK initialized successfully")
             except Exception as e:
