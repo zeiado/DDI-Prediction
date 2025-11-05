@@ -19,10 +19,11 @@ ENV/
 # Data files (training/test data)
 Backend/data/*.npy
 Backend/data/*.npz
-Backend/data/*.pkl
-Backend/data/*.pickle
 Backend/data/*.h5
 Backend/data/*.hdf5
+
+# Allow preprocessor (needed for deployment)
+!Backend/data/preprocessor.pkl
 
 # Large CSV data files
 model_data/db_drug_interactions.csv
