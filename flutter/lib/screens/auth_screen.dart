@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lottie/lottie.dart';
+import 'dart:ui';
 import '../utils/theme.dart';
 import 'home_screen.dart';
 
@@ -128,14 +131,17 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppTheme.gradientStart,
-              AppTheme.gradientEnd,
+              Color(0xFF667eea),
+              Color(0xFF764ba2),
+              Color(0xFFF093FB),
+              Color(0xFFF5576C),
             ],
+            stops: const [0.0, 0.4, 0.7, 1.0],
           ),
         ),
         child: SafeArea(
@@ -175,7 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'DDI Predictor',
+                    'Predict DDIs',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -192,37 +198,52 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 48),
 
-                  // Auth Form Card
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            _isLogin ? 'Welcome Back' : 'Create Account',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+                  // Auth Form Card with Glassmorphism
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withOpacity(0.3),
+                              Colors.white.withOpacity(0.2),
+                            ],
                           ),
-                          const SizedBox(height: 24),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.4),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                _isLogin ? 'Welcome Back' : 'Create Account',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24),
 
-                          // Name field (only for sign up)
-                          if (!_isLogin) ...[
+                              // Name field (only for sign up)
+                              if (!_isLogin) ...[
                             TextFormField(
                               controller: _nameController,
                               decoration: InputDecoration(
@@ -312,7 +333,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
                           // Submit button
                           ElevatedButton(
-                            onPressed: _isLoading ? null : _submitForm,
+                            onPressed: _isLoading ? null : () {
+                              HapticFeedback.lightImpact();
+                              _submitForm();
+                            },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               backgroundColor: AppTheme.primaryColor,
@@ -321,12 +345,14 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ? SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Lottie.asset(
+                                      'assets/animations/Loading Dots Blue.json',
+                                      width: 60,
+                                      height: 24,
+                                      fit: BoxFit.contain,
                                     ),
                                   )
                                 : Text(
@@ -374,7 +400,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
                           // Continue as guest
                           OutlinedButton.icon(
-                            onPressed: _isLoading ? null : _signInAnonymously,
+                            onPressed: _isLoading ? null : () {
+                              HapticFeedback.lightImpact();
+                              _signInAnonymously();
+                            },
                             icon: const Icon(Icons.person_outline),
                             label: const Text('Continue as Guest'),
                             style: OutlinedButton.styleFrom(
@@ -385,10 +414,12 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                           ),
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    ),
+                  ),
                   ],
                 ),
               ),

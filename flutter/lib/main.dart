@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'providers/interaction_provider.dart';
-import 'screens/video_splash_screen.dart';
+import 'screens/splash_screen.dart';
 import 'utils/theme.dart';
 
 void main() async {
@@ -24,10 +24,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => InteractionProvider()),
       ],
       child: MaterialApp(
-        title: 'DDI Predictor',
+        title: 'Predict DDIs',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const VideoSplashScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

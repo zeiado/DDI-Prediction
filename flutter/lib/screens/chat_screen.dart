@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:lottie/lottie.dart';
 import '../models/chat_message.dart';
 import '../models/interaction_result.dart';
 import '../services/chat_service.dart';
@@ -221,17 +222,23 @@ ${summary['arabic']}''';
   }
 
   Widget _buildLoadingState() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text(
-            'Preparing your personalized summary...',
+          Lottie.asset(
+            'assets/animations/Ai loading model.json',
+            width: 200,
+            height: 200,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'AI is preparing your personalized summary...',
             style: TextStyle(
               color: Colors.black54,
               fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -244,10 +251,11 @@ ${summary['arabic']}''';
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.chat_bubble_outline_rounded,
-            size: 80,
-            color: Colors.grey[300],
+          Lottie.asset(
+            'assets/animations/nodata.json',
+            width: 200,
+            height: 200,
+            fit: BoxFit.contain,
           ),
           const SizedBox(height: 16),
           const Text(
@@ -256,6 +264,14 @@ ${summary['arabic']}''';
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Start a conversation with the AI Assistant',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black38,
             ),
           ),
         ],
@@ -414,10 +430,11 @@ ${summary['arabic']}''';
               color: AppTheme.primaryColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.smart_toy_rounded,
-              color: AppTheme.primaryColor,
-              size: 20,
+            child: Lottie.asset(
+              'assets/animations/Star AI loader activated state.json',
+              width: 28,
+              height: 28,
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(width: 8),

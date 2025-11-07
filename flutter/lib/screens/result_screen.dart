@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 import '../models/interaction_result.dart';
 import '../utils/constants.dart';
 import '../utils/theme.dart';
@@ -113,8 +114,20 @@ class _ResultScreenState extends State<ResultScreen>
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: CustomScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withOpacity(0.12),
+              Colors.white,
+              color.withOpacity(0.06),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: CustomScrollView(
         slivers: [
           // Modern App Bar
           SliverAppBar(
@@ -122,7 +135,7 @@ class _ResultScreenState extends State<ResultScreen>
             floating: false,
             pinned: true,
             elevation: 0,
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.transparent,
             systemOverlayStyle: SystemUiOverlayStyle.dark,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_rounded, color: Colors.black87),
@@ -205,6 +218,7 @@ class _ResultScreenState extends State<ResultScreen>
             ),
           ),
         ],
+      ),
       ),
     );
   }

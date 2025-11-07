@@ -49,7 +49,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,

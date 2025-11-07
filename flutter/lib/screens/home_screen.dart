@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:ui';
 import '../providers/interaction_provider.dart';
 import '../widgets/drug_search_field.dart';
@@ -62,15 +64,19 @@ class _HomeScreenState extends State<HomeScreen>
     final prov = Provider.of<InteractionProvider>(context);
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
+      body: AnimatedContainer(
+        duration: const Duration(seconds: 3),
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFFF8FAFC),
-              Color(0xFFEEF2FF),
+              Color(0xFF667eea),
+              Color(0xFF764ba2),
+              Color(0xFFF093FB),
+              Color(0xFFF5576C),
             ],
+            stops: const [0.0, 0.4, 0.7, 1.0],
           ),
         ),
         child: SafeArea(
@@ -152,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'DDI Predictor',
+                            'Predict DDIs',
                             style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
@@ -369,12 +375,15 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 16),
 
               // Check Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
+              Hero(
+                tag: 'analyze_button',
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
                   onPressed: prov.isLoading || _drugA.isEmpty || _drugB.isEmpty
                       ? null
                       : () async {
+                        HapticFeedback.lightImpact();
                         await prov.checkInteraction(_drugA, _drugB);
                         if (prov.currentResult != null && mounted) {
                           Navigator.push(
@@ -402,12 +411,14 @@ class _HomeScreenState extends State<HomeScreen>
                     elevation: 2,
                   ),
                   child: prov.isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ? SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: Lottie.asset(
+                            'assets/animations/Loading Dots Blue.json',
+                            width: 60,
+                            height: 24,
+                            fit: BoxFit.contain,
                           ),
                         )
                       : const Row(
@@ -424,6 +435,7 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           ],
                         ),
+                  ),
                 ),
               ),
             ],
@@ -472,51 +484,84 @@ class _HomeScreenState extends State<HomeScreen>
     required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.2), width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(0.3),
+                  Colors.white.withOpacity(0.2),
+                ],
               ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.4),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                  spreadRadius: -5,
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.4),
+                        color.withOpacity(0.2),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 32),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -578,48 +623,86 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildStatCard(
       String title, String value, IconData icon, Color color) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.1),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withOpacity(0.25),
+                  Colors.white.withOpacity(0.15),
+                ],
               ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                  spreadRadius: -5,
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.3),
+                        color.withOpacity(0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

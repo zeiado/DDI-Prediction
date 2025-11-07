@@ -108,7 +108,7 @@ class _TermsScreenState extends State<TermsScreen> {
                             _buildSection(
                               'Terms of Use',
                               [
-                                'DDI Predictor is a medical information tool designed for healthcare professionals.',
+                                'Predict DDIs is a medical information tool designed for healthcare professionals.',
                                 'This application provides AI-powered drug interaction predictions based on scientific data and machine learning models.',
                                 'The information provided should not replace professional medical advice, diagnosis, or treatment.',
                                 'Always consult with qualified healthcare providers before making medical decisions.',
