@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies (CPU-only torch to save image size)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
@@ -23,5 +23,5 @@ EXPOSE 5000
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Run the API
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Run the API with Firebase support; use PORT env var if provided (for Render/Railway)
+CMD uvicorn api.main_with_firebase:app --host 0.0.0.0 --port ${PORT:-5000}

@@ -60,11 +60,12 @@ async def startup_event():
     global predictor, firebase, gemini_service
     
     try:
-        # Load ML model
+        # Load ML model - use paths relative to this file's directory
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         predictor = DDIPredictor(
-            model_path='../models/deepddi_model.pt',
-            preprocessor_path='../data/preprocessor.pkl',
-            model_info_path='../models/model_info.json'
+            model_path=os.path.join(base_dir, '..', 'models', 'deepddi_model.pt'),
+            preprocessor_path=os.path.join(base_dir, '..', 'data', 'preprocessor.pkl'),
+            model_info_path=os.path.join(base_dir, '..', 'models', 'model_info.json')
         )
         print("[OK] ML Model loaded successfully")
     except Exception as e:

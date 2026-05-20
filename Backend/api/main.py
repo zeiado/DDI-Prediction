@@ -43,15 +43,16 @@ async def startup_event():
     """Load model on startup"""
     global predictor
     try:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         predictor = DDIPredictor(
-            model_path='../models/deepddi_model.pt',
-            preprocessor_path='../data/preprocessor.pkl',
-            model_info_path='../models/model_info.json'
+            model_path=os.path.join(base_dir, '..', 'models', 'deepddi_model.pt'),
+            preprocessor_path=os.path.join(base_dir, '..', 'data', 'preprocessor.pkl'),
+            model_info_path=os.path.join(base_dir, '..', 'models', 'model_info.json')
         )
-        print("✅ Model loaded successfully")
+        print("[OK] Model loaded successfully")
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
-        print("⚠️ API will run but predictions will fail")
+        print(f"[ERROR] Error loading model: {e}")
+        print("[WARN] API will run but predictions will fail")
 
 
 # Pydantic models for request/response
