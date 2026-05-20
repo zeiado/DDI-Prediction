@@ -10,6 +10,13 @@ from typing import List, Dict, Optional
 from datetime import datetime
 import sys
 import os
+
+# Configure stdout and stderr to use UTF-8 to prevent encoding crashes on Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 from dotenv import load_dotenv
 
 # Load environment variables from parent directory
@@ -59,25 +66,25 @@ async def startup_event():
             preprocessor_path='../data/preprocessor.pkl',
             model_info_path='../models/model_info.json'
         )
-        print("✅ ML Model loaded successfully")
+        print("[OK] ML Model loaded successfully")
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f"[ERROR] Error loading model: {e}")
     
     try:
         # Initialize Firebase
         firebase = FirebaseService()
-        print("✅ Firebase initialized successfully")
+        print("[OK] Firebase initialized successfully")
     except Exception as e:
-        print(f"⚠️ Firebase initialization failed: {e}")
-        print("⚠️ API will run without cloud storage")
+        print(f"[WARN] Firebase initialization failed: {e}")
+        print("[WARN] API will run without cloud storage")
     
     try:
         # Initialize Gemini Chat Service
         gemini_service = GeminiChatService()
-        print("✅ Gemini AI Chat Service initialized")
+        print("[OK] Gemini AI Chat Service initialized")
     except Exception as e:
-        print(f"⚠️ Gemini initialization failed: {e}")
-        print("⚠️ Chat features will be unavailable")
+        print(f"[WARN] Gemini initialization failed: {e}")
+        print("[WARN] Chat features will be unavailable")
 
 
 # ==================== Pydantic Models ====================
@@ -603,11 +610,11 @@ if __name__ == "__main__":
     import uvicorn
     
     print("="*60)
-    print("🚀 Starting DDI Predictor API with Firebase")
+    print("[START] Starting DDI Predictor API with Firebase")
     print("="*60)
-    print("📍 API: http://localhost:5000")
-    print("📚 Docs: http://localhost:5000/docs")
-    print("🔥 Firebase: Enabled")
+    print("API: http://localhost:5000")
+    print("Docs: http://localhost:5000/docs")
+    print("Firebase: Enabled")
     print("="*60)
     
     uvicorn.run(

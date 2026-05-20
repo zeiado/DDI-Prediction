@@ -286,7 +286,7 @@ class AppConstants {
 **File:** `Backend/src/gemini_service.py`
 ```python
 # Model selection
-self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+self.model = genai.GenerativeModel('gemini-2.5-flash')
 
 # Generation parameters
 generation_config={

@@ -28,7 +28,7 @@ class GeminiChatService:
         genai.configure(api_key=self.api_key)
         
         # Initialize model
-        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
         
         # System prompt for DDI assistant
         self.system_prompt = """You are a helpful medical AI assistant specialized in Drug-Drug Interactions (DDI).
@@ -236,6 +236,12 @@ The user is asking about this specific interaction. Please provide helpful, accu
 
 # Test function
 if __name__ == "__main__":
+    import os
+    from dotenv import load_dotenv
+    # Load env from parent directory
+    env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+    load_dotenv(env_path)
+
     # Test the service
     try:
         service = GeminiChatService()
@@ -259,10 +265,18 @@ if __name__ == "__main__":
         print("="*60)
         
         summary = service.generate_initial_summary(test_interaction)
-        print("\n🇬🇧 English Summary:")
-        print(summary['english'])
-        print("\n🇦🇪 Arabic Summary:")
-        print(summary['arabic'])
+        print("\n[EN] English Summary:")
+        # Safe encode/decode for Windows console printing if needed, or print directly
+        try:
+            print(summary['english'])
+        except UnicodeEncodeError:
+            print(summary['english'].encode('ascii', 'ignore').decode('ascii'))
+            
+        print("\n[AR] Arabic Summary:")
+        try:
+            print(summary['arabic'])
+        except UnicodeEncodeError:
+            print(summary['arabic'].encode('ascii', 'ignore').decode('ascii'))
         
         print("\n" + "="*60)
         print("Testing chat...")
@@ -273,9 +287,13 @@ if __name__ == "__main__":
             test_interaction
         )
         print("\nResponse:")
-        print(response['response'])
+        try:
+            print(response['response'])
+        except UnicodeEncodeError:
+            print(response['response'].encode('ascii', 'ignore').decode('ascii'))
         
-        print("\n✅ Service test completed successfully!")
+        print("\n[OK] Service test completed successfully!")
         
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f"[ERROR] Test failed: {e}")
+

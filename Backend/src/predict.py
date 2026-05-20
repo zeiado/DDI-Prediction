@@ -52,7 +52,7 @@ class DDIPredictor:
         self.model.to(self.device)
         self.model.eval()
         
-        print(f"✅ Model loaded successfully on {self.device}")
+        print(f"[OK] Model loaded successfully on {self.device}")
         print(f"Classes: {self.model_info['classes']}")
     
     def smiles_to_fingerprint(self, smiles):
